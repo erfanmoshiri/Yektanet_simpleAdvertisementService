@@ -4,7 +4,7 @@ class Advertiser(models.Model):
 
     Name = models.CharField(max_length=30)
     Clicks = models.IntegerField(null=True)
-    Views = models.IntegerField()
+    Views = models.IntegerField(null=True)
 
 
 class Ad(models.Model):
