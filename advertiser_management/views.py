@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from advertiser_management.forms import CreateAdvForm, CreateAdForm1, ShowAdsDto
 from advertiser_management.models import Ad, Advertiser
@@ -47,10 +47,11 @@ class CreateAd(View):
             return HttpResponse(form.errors)
 
 
-class Click(View):
-    def get(self, request):
-        # <view logic>
-        return HttpResponse('result')
+def Click(request, Id):
+    ad = Ad.objects.get(id=Id)
+    ad.Clicks += 1
+    ad.save()
+    return redirect(ad.Link)
 
 
 class ShowAdds(View):
@@ -62,6 +63,8 @@ class ShowAdds(View):
 
         groupedByAdv = {}
         for ad in allAds:
+            ad.Views += 1
+            ad.save()
             advName = [x.Name for x in allAdvs if str(x.id) == ad.AdvertiserId][0]
             # advGroup = [x.get(advName) for x in groupedByAdv]
             group = groupedByAdv.get(advName)
