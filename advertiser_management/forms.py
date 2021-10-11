@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 
 from advertiser_management.models import Ad, Advertiser
@@ -29,3 +31,24 @@ class ShowAdsDto:
 
     Name: str
     Ads: list
+
+
+class ClickViewRelevance:
+    hour: str
+    count: int
+
+    def __init__(self, hour, count):
+        self.hour = hour
+        self.count = count
+
+    def __eq__(self, other):
+        return self.count == other.count
+
+    def __lt__(self, other):
+        return self.count > other.count
+
+    def __le__(self, other):
+        return self.count >= other.count
+
+    def toJSON(self):
+        return {'hour': self.hour, 'count': self.count}
