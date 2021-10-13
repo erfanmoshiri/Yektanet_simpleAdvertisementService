@@ -7,6 +7,7 @@ from Yektanet import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('advertiser_management.urls')),
+    path('', include('account_management.urls')),
 ]
 
 if settings.DEBUG:

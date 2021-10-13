@@ -5,11 +5,14 @@ from statistics import mean
 from django.db.models import *
 from django.db.models.functions import TruncHour
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from advertiser_management import models
-from advertiser_management.forms import CreateAdvForm, CreateAdForm1, ShowAdsDto, ClickViewRelevance
+from advertiser_management.forms import CreateAdvForm, CreateAdForm, ShowAdsDto, ClickViewRelevance
 from advertiser_management.models import Ad, Advertiser, Click
 
 
@@ -22,49 +25,67 @@ def get_client_ip(request):
     return ip
 
 
-class CreateAdv(View):
+class CreateAdv(APIView):
     def get(self, request):
-        form = CreateAdvForm()
-        return render(request, 'add_adv_form.html', {'form': form})
+        return render(request, "advertiser.html", )
 
     def post(self, request):
-        form = CreateAdvForm(request.POST)
-        if form.is_valid():
-            adv = form.save()
-            return HttpResponse("Created")
+        adv = CreateAdvForm(data=request.data)
+        if adv.is_valid():
+            adv.save()
+            return Response({'message': 'advertiser added successfully!'})
 
-        return HttpResponse("failed")
+        return Response({'message': adv.errors})
+
+    # def get(self, request):
+    #     form = CreateAdvForm()
+    #     return render(request, 'add_adv_form.html', {'form': form})
+    #
+    # def post(self, request):
+    #     form = CreateAdvForm(request.POST)
+    #     if form.is_valid():
+    #         adv = form.save()
+    #         return HttpResponse("Created")
+    #
+    #     return HttpResponse("failed")
 
 
-class CreateAd(View):
+class CreateAd(APIView):
     def get(self, request):
-        # return render(request, 'add_ad_form.html')
-        form = CreateAdForm1()
-        return render(request, 'add_ad_form.html', {'form': form})
+        return render(request, "ad.html", )
+
+        # form = CreateAdForm()
+        # return render(request, 'add_ad_form.html', {'form': form})
+
+        # # renderer_classes = [JSONRenderer]
+        # # template_name = 'profile_detail.html'
+        # ad = get_object_or_404(Ad, id=6)
+        # ad_s = CreateAdForm(ad)
+        # return Response({'form': form}, template_name=template_name)
+        # return Response({'form': ad_s.data})
 
     def post(self, request):
-        form = CreateAdForm1(request.POST or None, request.FILES or None)
-        if form.is_valid():
-            # body = json.loads(request.body.decode('utf-8'))
-            adv_idd = request.POST.get("AdvertiserId")
-            try:
-                f = Advertiser.objects.get(id=adv_idd)
-                form.save()
-            except:
-                return HttpResponse('Advertiser were not found')
+        ad = CreateAdForm(data=request.data)
+        if ad.is_valid():
+            ad.save()
+            return Response({'message': 'ad added successfully!'})
 
-            # ad = Ad()
-            # ad.AdvertiserId = form.cleaned_data['Adv_Id']
-            # ad.Link = form.cleaned_data['Link']
-            # ad.Title = form.cleaned_data['Title']
-            # ad.Image = form.cleaned_data['Image']
-            # ad.save()
-            # return HttpResponse({"Done"})
-            return redirect('show')
+        return Response({'message': ad.errors})
+        # form = CreateAdForm(request.POST or None, request.FILES or None)
+        # if form.is_valid():
+        #     adv_idd = request.POST.get("AdvertiserId")
+        #     try:
+        #         f = Advertiser.objects.get(id=adv_idd)
+        #         form.save()
+        #     except:
+        #         return HttpResponse('Advertiser were not found')
+        #
+        #     return redirect('show')
+        #
+        # else:
+        #
+        #     return HttpResponse(form.errors)
 
-        else:
-
-            return HttpResponse(form.errors)
 
 
 class Clicks(View):
@@ -76,21 +97,15 @@ class Clicks(View):
         return redirect(ad.Link)
 
 
-class ShowAdds(View):
+class ShowAdds(APIView):
     def get(self, request):
         all_ads = list(Ad.objects.all())
         all_advs = list(Advertiser.objects.all())
-        # advIds = (x.AdvertiserId for x in allAds)
-        # uniqueAdvIds = set(advIds)
-        # ip = get_client_ip(request)
         views_list = []
         grouped_by_adv = {}
         for ad in all_ads:
-            # ad.Views += 1
-            # ad.save()
             views_list.append(models.View(AdId=ad.id, IpAddress=request.ipAddress, CreatedAt=datetime.now()))
             advName = [x.Name for x in all_advs if str(x.id) == ad.AdvertiserId][0]
-            # advGroup = [x.get(advName) for x in groupedByAdv]
             group = grouped_by_adv.get(advName)
             if group is None:
                 grouped_by_adv[advName] = [ad]
@@ -104,10 +119,9 @@ class ShowAdds(View):
 
         context = {'advertisers': final_list}
         return render(request, 'ads.html', context=context)
-        # return HttpResponse(groupedByAdv)
 
 
-class Data(View):
+class Data(APIView):
     def get(self, request, id):
         final_result = {}
         d = Ad.objects.values('AdvertiserId').annotate(dcount=Count('AdvertiserId'))
@@ -136,6 +150,7 @@ class Data(View):
         sorted_relevance_by_hour.sort()
         jsoned = [x.toJSON() for x in sorted_relevance_by_hour]
         final_result['sorted_relevance_by_hour'] = jsoned
+        final_result['click_view_relevance'] = click_view_relevance
 
         time_delta_list = []
         for i in all_views:

@@ -1,18 +1,10 @@
 import json
-
 from django import forms
-
+from rest_framework import serializers
 from advertiser_management.models import Ad, Advertiser
 
 
-# class CreateAdForm(forms.Form):
-#
-#     Adv_Id = forms.CharField(label='Adv_Id', max_length=100)
-#     Title = forms.CharField(label='Title', max_length=100)
-#     Link = forms.CharField(label='Link', max_length=1000)
-#     Image = forms.ImageField(label='Image')
-
-class CreateAdForm1(forms.ModelForm):
+class CreateAdForm(serializers.ModelSerializer):
     class Meta:
         model = Ad
         fields = ('Title', 'AdvertiserId', 'Link', 'Image')

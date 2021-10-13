@@ -1,0 +1,27 @@
+
+<!-- saved from url=(0024)http://127.0.0.1:8000/ad -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><form action="http://127.0.0.1:8000/ad" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrfmiddlewaretoken" value="MbFZ97L7bm8CK36FhJUg4rgbjgCukV6SPtNchRttPCYbXobJEMEvQ9zI8fyCWa4M">
+    <p><label for="id_Title">Title:</label> <input type="text" name="Title" maxlength="30" required="" id="id_Title" value="{{ form.Title }}"></p>
+<p><label for="id_AdvertiserId">AdvertiserId:</label> <input type="text" name="AdvertiserId" maxlength="30" required="" id="id_AdvertiserId" value="{{ form.AdvertiserId }}"></p>
+<p><label for="id_Link">Link:</label> <input name="Link" cols="40" rows="10" required="" id="id_Link" value="{{ form.Link }}"></input></p>
+<p><label for="id_Image">Image:</label> <input type="file" name="Image" accept="image/*" required="" id="id_Image" value="{{ form.Image }}"></p>
+    <!-- <label for="Adv_Id">advertiser id: </label>
+    <input id="Adv_Id" type="text" name="Adv_Id" value="">
+    <div></div>
+
+    <label for="Title">Title: </label>
+    <input id="Title" type="text" name="Title" value="">
+    <div></div>
+
+    <label for="Image">Image: </label>
+    <input id="Image" type="text" name="Image" value="">
+    <div></div>
+
+    <label for="Link">Url: </label>
+    <input id="Link" type="text" name="Link" value="">
+    <div></div>
+ -->
+
+    <input type="submit" value="OK">
+</form>{% csrf_token %}</body></html>
