@@ -1,7 +1,7 @@
 from django.db import models
 
-class Advertiser(models.Model):
 
+class Advertiser(models.Model):
     Name = models.CharField(max_length=30)
     # Clicks = models.IntegerField(null=True, default=0)
     # Views = models.IntegerField(null=True, default=0)
@@ -13,17 +13,44 @@ class Ad(models.Model):
     Link = models.TextField()
     Image = models.ImageField(upload_to='images/')
     Approve = models.BooleanField(default=False)
+
     # Clicks = models.IntegerField(null=True, default=0)
     # Views = models.IntegerField(null=True, default=0)
     def __str__(self):
         return self.Title
+
 
 class View(models.Model):
     AdId = models.CharField(max_length=40)
     IpAddress = models.CharField(max_length=30)
     CreatedAt = models.DateTimeField()
 
+
 class Click(models.Model):
     AdId = models.CharField(max_length=40)
     IpAddress = models.CharField(max_length=30)
     CreatedAt = models.DateTimeField()
+
+
+class DailyView(models.Model):
+    ad_id = models.CharField(max_length=40)
+    count = models.IntegerField()
+    created_at = models.DateTimeField()
+
+
+class DailyClick(models.Model):
+    ad_id = models.CharField(max_length=40)
+    count = models.IntegerField()
+    created_at = models.DateTimeField()
+
+
+class HourlyView(models.Model):
+    ad_id = models.CharField(max_length=40)
+    count = models.IntegerField()
+    created_at = models.DateTimeField()
+
+
+class HourlyClick(models.Model):
+    ad_id = models.CharField(max_length=40)
+    count = models.IntegerField()
+    created_at = models.DateTimeField()

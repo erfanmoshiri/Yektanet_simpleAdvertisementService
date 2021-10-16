@@ -13,6 +13,10 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from celery.schedules import crontab
+
+from Yektanet.celery import app
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -38,7 +42,10 @@ INSTALLED_APPS = [
     'advertiser_management',
     'rest_framework',
     "rest_framework.authtoken",
-    'account_management'
+    'account_management',
+    'celery',
+    # 'rabbitmq',
+    'django_celery_beat',
 ]
 
 REST_FRAMEWORK = {
@@ -50,7 +57,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-AUTH_USER_MODEL='account_management.User'
+AUTH_USER_MODEL = 'account_management.User'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -136,3 +143,22 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Tehran'
+app.conf.enable_utc = False  # so celery doesn't take utc by default
+CELERY_BEAT_SCHEDULE = {
+    'hourly': {
+        'task': 'advertiser_management.tasks.hourly_analytics',
+        'schedule': crontab(minute='0', hour='*/1')
+    },
+    'daily': {
+        'task': 'advertiser_management.tasks.daily_analytics',
+        'schedule': crontab()
+    },
+}

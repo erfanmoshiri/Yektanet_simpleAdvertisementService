@@ -5,9 +5,8 @@ from statistics import mean
 from django.db.models import *
 from django.db.models.functions import TruncHour
 from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.views import View
-from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -37,32 +36,10 @@ class CreateAdv(APIView):
 
         return Response({'message': adv.errors})
 
-    # def get(self, request):
-    #     form = CreateAdvForm()
-    #     return render(request, 'add_adv_form.html', {'form': form})
-    #
-    # def post(self, request):
-    #     form = CreateAdvForm(request.POST)
-    #     if form.is_valid():
-    #         adv = form.save()
-    #         return HttpResponse("Created")
-    #
-    #     return HttpResponse("failed")
-
 
 class CreateAd(APIView):
     def get(self, request):
         return render(request, "ad.html", )
-
-        # form = CreateAdForm()
-        # return render(request, 'add_ad_form.html', {'form': form})
-
-        # # renderer_classes = [JSONRenderer]
-        # # template_name = 'profile_detail.html'
-        # ad = get_object_or_404(Ad, id=6)
-        # ad_s = CreateAdForm(ad)
-        # return Response({'form': form}, template_name=template_name)
-        # return Response({'form': ad_s.data})
 
     def post(self, request):
         ad = CreateAdForm(data=request.data)
@@ -71,21 +48,6 @@ class CreateAd(APIView):
             return Response({'message': 'ad added successfully!'})
 
         return Response({'message': ad.errors})
-        # form = CreateAdForm(request.POST or None, request.FILES or None)
-        # if form.is_valid():
-        #     adv_idd = request.POST.get("AdvertiserId")
-        #     try:
-        #         f = Advertiser.objects.get(id=adv_idd)
-        #         form.save()
-        #     except:
-        #         return HttpResponse('Advertiser were not found')
-        #
-        #     return redirect('show')
-        #
-        # else:
-        #
-        #     return HttpResponse(form.errors)
-
 
 
 class Clicks(View):
